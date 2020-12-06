@@ -57,3 +57,27 @@ class SampleListView(ListAPIView):
         res = super().get(self, request, *args, **kwargs)
         return_dict = build_ret_data(OP_SUCCESS, res.data)
         return render_json(return_dict)
+
+
+class SampleDestroyView(DestroyAPIView):
+    queryset = SampleSet.objects.all()
+    """
+    # 自定义get_object()方法，可以删除其它的其它数据，按return的项来删除
+    def get_object(self, *args, **kwargs):
+        user = self.request.user
+        if user.username == 'admin':
+            return user
+        else:
+            return None
+    """
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            res = super().destroy(self, request, *args, **kwargs)
+            return_dict = build_ret_data(OP_SUCCESS, str(res))
+            print(res)
+            return render_json(return_dict)
+        except Exception as e:
+            print(e)
+            return_dict = build_ret_data(THROW_EXP, str(e))
+            return render_json(return_dict)

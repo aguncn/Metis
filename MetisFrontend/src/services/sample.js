@@ -1,4 +1,4 @@
-import {SAMPLE_COUNT, SAMPLE_LIST, TASK_DELETE} from '@/services/api'
+import {SAMPLE_COUNT, SAMPLE_LIST, SAMPLE_EDIT, SAMPLE_DELETE} from '@/services/api'
 import {request, METHOD, removeAuthorization} from '@/utils/request'
 
 /**
@@ -22,8 +22,17 @@ export async function sampleCount(data) {
  */
 export async function deleteSample(data) {
 	// 传给DjangoRestFramework的delete的URL需要带pk(id)参数，在这里组合一下
-	const SAMPLE_DELETE_PATH = TASK_DELETE + data + '/'
+	const SAMPLE_DELETE_PATH = SAMPLE_DELETE + data + '/'
   return request(SAMPLE_DELETE_PATH, METHOD.DELETE)
+}
+
+/**
+ * 编辑样本
+ */
+export async function editSample(data) {
+	// 传给DjangoRestFramework的edit的URL需要带pk(id)参数，在这里组合一下
+	const SAMPLE_EDIT_PATH = SAMPLE_EDIT + data + '/'
+  return request(SAMPLE_EDIT_PATH, METHOD.POST)
 }
 
 /**
@@ -53,6 +62,7 @@ export async function getSampleList(data) {
 export default {
   sampleCount,
 	deleteSample,
-	getSampleList
+	getSampleList,
+	editSample
 	
 }

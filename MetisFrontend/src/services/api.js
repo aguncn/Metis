@@ -10,6 +10,7 @@ module.exports = {
 	TASK_DELETE: `${REAL_URL}/task/delete/`,
 	SAMPLE_COUNT: `${REAL_URL}/sample/count`,
 	SAMPLE_LIST: `${REAL_URL}/sample/list/`,
+	SAMPLE_EDIT: `${REAL_URL}/sample/edit/`,
 	SAMPLE_DELETE: `${REAL_URL}/sample/delete/`,
   ROUTES: `${BASE_URL}/routes`
 }

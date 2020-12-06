@@ -28,7 +28,7 @@ const options = {
       children: [
         {
           path: 'demo',
-          name: '演示页',
+          name: '异常时序',
           meta: {
             icon: 'file-ppt',
 						refresh: 'true'

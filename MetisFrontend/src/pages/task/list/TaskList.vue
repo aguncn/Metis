@@ -129,7 +129,7 @@ export default {
 						return (
 							<a-tooltip>
 								<template slot="title">
-									{this.$options.filters.minFormat(record.createDate)}
+									{this.$options.filters.secFormat(record.createDate)}
 								</template>
 								{text}
 							</a-tooltip>

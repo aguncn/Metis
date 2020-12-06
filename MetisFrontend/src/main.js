@@ -11,6 +11,7 @@ import Plugins from '@/plugins'
 import {initI18n} from '@/utils/i18n'
 import bootstrap from '@/bootstrap'
 import moment from 'moment'
+import VeLine from 'v-charts/lib/line.common'
 
 const router = initRouter(store.state.setting.asyncRoutes)
 const i18n = initI18n('CN', 'US')
@@ -22,9 +23,10 @@ Vue.use(Plugins)
 Vue.filter('dayFormat', function(dataStr, pattern='YYYY-MM-DD'){
 	return moment(dataStr).format(pattern)
 })
-Vue.filter('minFormat', function(dataStr, pattern='YYYY-MM-DD HH:mm:ss'){
+Vue.filter('secFormat', function(dataStr, pattern='YYYY-MM-DD HH:mm:ss'){
 	return moment(dataStr).format(pattern)
 })
+Vue.component(VeLine.name, VeLine)
 
 bootstrap({router, store, i18n, message: Vue.prototype.$message})
 
