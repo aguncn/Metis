@@ -8,8 +8,10 @@ import time
 from django.utils import timezone
 from MetisModels.models import TrainTask
 from .serializers import SampleSetSerializer
+from .serializers import SampleUpdateSetSerializer
 from rest_framework.generics import CreateAPIView
 from rest_framework.generics import ListAPIView
+from rest_framework.generics import UpdateAPIView
 from rest_framework.generics import DestroyAPIView
 from rest_framework.filters import OrderingFilter, SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
@@ -59,17 +61,38 @@ class SampleListView(ListAPIView):
         return render_json(return_dict)
 
 
+class SampleUpdateView(UpdateAPIView):
+    """
+        url获取pk,修改时指定序列化类和query_set
+        """
+    model = SampleSet
+    serializer_class = SampleUpdateSetSerializer
+    queryset = model.objects.all()
+
+    # 前端使用patch方法，到达这里
+    def patch(self, request, *args, **kwargs):
+        req_data = request.data
+        sid = req_data['id']
+        source = req_data['source']
+        train_or_test = req_data['trainTest']
+        positive_or_negative = req_data['positiveNegative']
+        # 这样更新，可以把那些update_date字段自动更新，而使用filter().update()则是不会
+        try:
+            _t = SampleSet.objects.get(id=sid)
+            _t.source = source
+            _t.train_or_test = train_or_test
+            _t.positive_or_negative = positive_or_negative
+            _t.save()
+            return_dict = build_ret_data(OP_SUCCESS, str(req_data))
+            return render_json(return_dict)
+        except Exception as e:
+            print(e)
+            return_dict = build_ret_data(THROW_EXP, str(e))
+            return render_json(return_dict)
+
+
 class SampleDestroyView(DestroyAPIView):
     queryset = SampleSet.objects.all()
-    """
-    # 自定义get_object()方法，可以删除其它的其它数据，按return的项来删除
-    def get_object(self, *args, **kwargs):
-        user = self.request.user
-        if user.username == 'admin':
-            return user
-        else:
-            return None
-    """
 
     def destroy(self, request, *args, **kwargs):
         try:

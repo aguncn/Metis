@@ -1,4 +1,4 @@
-import {SAMPLE_COUNT, SAMPLE_LIST, SAMPLE_EDIT, SAMPLE_DELETE} from '@/services/api'
+import {SAMPLE_COUNT, SAMPLE_LIST, SAMPLE_UPDATE, SAMPLE_DELETE} from '@/services/api'
 import {request, METHOD, removeAuthorization} from '@/utils/request'
 
 /**
@@ -29,10 +29,20 @@ export async function deleteSample(data) {
 /**
  * 编辑样本
  */
-export async function editSample(data) {
+export async function updateSample(data) {
+	console.log(data)
+	const id = data.id
+	const trainTest = data['trainTest']
+	const source = data['source']
+	const positiveNegative = data['positiveNegative']
 	// 传给DjangoRestFramework的edit的URL需要带pk(id)参数，在这里组合一下
-	const SAMPLE_EDIT_PATH = SAMPLE_EDIT + data + '/'
-  return request(SAMPLE_EDIT_PATH, METHOD.POST)
+	const SAMPLE_UPDATE_PATH = SAMPLE_UPDATE + id + '/'
+  return request(SAMPLE_UPDATE_PATH, METHOD.PATCH, {
+		  id,
+			trainTest, 
+			source,
+			positiveNegative
+	})
 }
 
 /**
@@ -63,6 +73,6 @@ export default {
   sampleCount,
 	deleteSample,
 	getSampleList,
-	editSample
+	updateSample
 	
 }

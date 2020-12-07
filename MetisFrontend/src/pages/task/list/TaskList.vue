@@ -77,9 +77,13 @@
 			    @change="handleTableChange"
 			  >
 			    <div slot="action" slot-scope="record">
-			      <a @click="deleteRecord(record)">
-			        <a-button type="danger" >删除</a-button>
-			      </a>
+						<a-popconfirm 
+							title="确定删除？" 
+							ok-text="是" 
+							cancel-text="否"
+							@confirm="deleteRecord(record)">
+							<a-button type="danger" >删除</a-button>
+						</a-popconfirm>
 			    </div>
 			    <template slot="taskStatus" slot-scope="text">
 			    		<a-spin v-if="text==='running'" />

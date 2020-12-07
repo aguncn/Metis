@@ -84,9 +84,13 @@
 							<a @click="editSample(record)">
 								<a-button type="primary" >编辑</a-button>
 							</a>
-							<a @click="deleteRecord(record)">
+							<a-popconfirm
+								title="确定删除？" 
+								ok-text="是" 
+								cancel-text="否"
+								@confirm="deleteRecord(record)">
 								<a-button type="danger" >删除</a-button>
-							</a>
+							</a-popconfirm>
 						</a-button-group>
 			    </div>
 			    <template slot="trainTest" slot-scope="text">
@@ -110,7 +114,7 @@
 		</a-modal>
 		
 		<a-modal v-model="visibleEditSample" title="编辑"
-			width='60%'
+			width='40%'
 			@ok="handleEditSampleOk">
 			<a-form style="max-width: 500px; margin: 40px auto 0;">
 				<a-form-item
@@ -131,7 +135,7 @@
 					:wrapperCol="{span: 17}"
 					:required="true"
 				>
-					<a-select v-model='taskForm.negativePositive'>
+					<a-select v-model='taskForm.positiveNegative'>
 						<a-select-option value="negative">负样本</a-select-option>
 						<a-select-option value="positive">正样本</a-select-option>
 					</a-select>
@@ -148,7 +152,9 @@
 					</a-select>
 				</a-form-item>
 				<a-form-item :wrapperCol="{span: 17, offset: 7}">
-					<a-button type="danger">提交修改</a-button>
+					<a @click="updateSample">
+						<a-button type="danger">提交修改</a-button>
+					</a>
 				</a-form-item>
 			</a-form>
 		</a-modal>
@@ -157,7 +163,7 @@
 
 <script>
 import {dataSeries} from '@/utils/dataSeries'
-import {getSampleList, editSample, deleteSample} from '@/services/sample'
+import {getSampleList, updateSample, deleteSample} from '@/services/sample'
 
 export default {
   name: 'SampleList',
@@ -174,9 +180,10 @@ export default {
 			titleSamples: [],
       advanced: false,
 			taskForm: {
-				source: ['metis'],
-				trainTest: ['train'],
-				negativePositive: ['negative'] 
+				id: 0,
+				source: '',
+				trainTest: '',
+				positiveNegative: '' 
 			},
 			pagination: {
 				'total': 0,
@@ -321,26 +328,39 @@ export default {
     },
 		
 		showSample(params) {
-			console.log(this.dataAbc[params.key])
 			this.titleSample = this.titleSamples[params.key]
 			this.dataSingleAbc = this.dataAbc[params.key]
 			this.visibleShowSample = true;
 		},
 		
 		editSample(params) {
-			console.log(this.dataAbc[params.key])
-			this.titleSample = this.titleSamples[params.key]
-			this.dataSingleAbc = this.dataAbc[params.key]
+			this.taskForm.id = params.id
+			this.taskForm.trainTest = params.trainTest
+			this.taskForm.source = params.source
+			this.taskForm.positiveNegative = params.positiveNegative
 			this.visibleEditSample = true;
 		},
 		
 		handleEditSampleOk(e) {
-			console.log(e);
+			this.fetch(this.pagination)
 			this.visibleEditSample = false;
 		},
 		
+		updateSample() {
+			updateSample(this.taskForm).then(resp => {
+				let retData = resp.data
+				if (retData.code == 0) {
+					this.fetch(this.pagination)
+					this.loading = false;
+					this.$message.success('更新成功！', 3)
+				} else {
+					this.loading = false;
+					this.$message.error('更新失败！' + retData.message, 3)
+				}
+			})
+		},
+		
 		handleShowSampleOk(e) {
-			console.log(e);
 			this.visibleShowSample = false;
 		}
   }

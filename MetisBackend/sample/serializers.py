@@ -26,3 +26,10 @@ class SampleSetSerializer(serializers.ModelSerializer):
             },
         }
 
+
+class SampleUpdateSetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SampleSet
+        # fields = '__all__'
+        fields = ['source', 'train_or_test', 'positive_or_negative']
+
