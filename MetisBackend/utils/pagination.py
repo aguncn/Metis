@@ -4,6 +4,7 @@ from django_filters.rest_framework import FilterSet
 from django_filters import filters
 from MetisModels.models import TrainTask
 from MetisModels.models import SampleSet
+from MetisModels.models import Anomaly
 
 
 class PNPagination(PageNumberPagination):
@@ -51,3 +52,12 @@ class SampleFilter(FilterSet):
     class Meta:
         model = SampleSet
         fields = ['train_or_test',  'source']
+
+
+class AnomalyFilter(FilterSet):
+    attr = filters.CharFilter(field_name='attr', lookup_expr='icontains')
+    anomaly_time = filters.CharFilter(field_name='anomaly_time', lookup_expr='icontains')
+
+    class Meta:
+        model = Anomaly
+        fields = ['attr',  'anomaly_time']

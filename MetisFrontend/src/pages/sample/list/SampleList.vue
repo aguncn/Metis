@@ -74,7 +74,6 @@
 			    :data-source="dataSource"
 			    :pagination="pagination"
 			    :loading="loading"
-			    @change="handleTableChange"
 			  >
 			    <div slot="action" slot-scope="record">
 						<a-button-group>
@@ -196,8 +195,13 @@ export default {
 					'taskStaus': '',
 					'modelName': '',
 					'trainDate': ''
-					
-				}
+				},
+				onChange: page => {
+					const pager = { ...this.pagination };
+					pager.currentPage = page;
+					this.pagination = pager;
+					this.fetch(this.pagination);
+				},
 			},
 			loading: false,
       dataSource: [],
@@ -291,12 +295,6 @@ export default {
 				}
 			})
 		},
-		handleTableChange(pagination) {
-      const pager = { ...this.pagination };
-      pager.currentPage = pagination.current;
-      this.pagination = pager;
-      this.fetch(this.pagination);
-    },
 		handleSubmit(e) {
 			e.preventDefault();
 			this.fetch(this.pagination)

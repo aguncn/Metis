@@ -67,6 +67,14 @@ class Anomaly(models.Model):
     def username(self):
         return self.create_user.username
 
+    @property
+    def attr_name(self):
+        return self.attr.attr_name
+
+    @property
+    def view_set_name(self):
+        return self.attr.view_set.view_name
+
     def __str__(self):
         return self.attr.attr_name
 

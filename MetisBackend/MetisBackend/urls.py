@@ -29,4 +29,5 @@ urlpatterns = [
 urlpatterns += [
     path('task/', include('task.urls')),
     path('sample/', include('sample.urls')),
+    path('anomaly/', include('anomaly.urls')),
 ]

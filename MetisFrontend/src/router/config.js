@@ -27,20 +27,18 @@ const options = {
       redirect: '/login',
       children: [
         {
-          path: 'demo',
+          path: 'anomaly',
           name: '异常时序',
           meta: {
             icon: 'file-ppt',
-						refresh: 'true'
           },
-          component: () => import('@/pages/demo')
+          component: () => import('@/pages/anomaly/list')
         },
 				{
 				  path: 'sample',
 				  name: '样本库',
 				  meta: {
 				    icon: 'file-ppt',
-						//refresh: 'true'
 				  },
 				  component: () => import('@/pages/sample/list')
 				},
@@ -69,7 +67,7 @@ const options = {
         },
         {
           path: 'parent2',
-          name: '父级路由2',
+          name: '用户管理',
           meta: {
             icon: 'form'
           },
@@ -84,7 +82,7 @@ const options = {
         },
         {
           path: 'exception',
-          name: '异常页',
+          name: 'API',
           meta: {
             icon: 'warning',
           },

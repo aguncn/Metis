@@ -1,15 +1,8 @@
-from django.utils import timezone
 from MetisModels.models import SampleSet
-from .serializers import SampleSetSerializer
 from rest_framework.views import APIView
-from config.error_code import *
-from utils.utils import build_ret_data, render_json
-import time
 from django.utils import timezone
-from MetisModels.models import TrainTask
 from .serializers import SampleSetSerializer
 from .serializers import SampleUpdateSetSerializer
-from rest_framework.generics import CreateAPIView
 from rest_framework.generics import ListAPIView
 from rest_framework.generics import UpdateAPIView
 from rest_framework.generics import DestroyAPIView

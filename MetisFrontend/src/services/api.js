@@ -12,5 +12,6 @@ module.exports = {
 	SAMPLE_LIST: `${REAL_URL}/sample/list/`,
 	SAMPLE_UPDATE: `${REAL_URL}/sample/update/`,
 	SAMPLE_DELETE: `${REAL_URL}/sample/delete/`,
+	ANOMALY_LIST: `${REAL_URL}/anomaly/list/`,
   ROUTES: `${BASE_URL}/routes`
 }
