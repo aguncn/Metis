@@ -94,6 +94,20 @@
 					<a-input placeholder="请输入" v-model="attrForm.description" :disabled="modalTitle == '查看指标'"/>
 				</a-form-item>
 				<a-form-item
+					label="所属指标集"
+					:labelCol="{span: 7}"
+					:wrapperCol="{span: 17}"
+					:required="true"
+				>
+					<a-select v-model='attrForm.viewSetId' :disabled="modalTitle == '查看指标'">
+						<a-select-option 
+							v-for="item in dataSourceViewSet"
+							:key="item.id"
+							:value="item.id">{{item.viewSetName}}
+						</a-select-option>
+					</a-select>
+				</a-form-item>
+				<a-form-item
 					label="模型文件名称"
 					:labelCol="{span: 7}"
 					:wrapperCol="{span: 17}"
@@ -159,11 +173,13 @@
 import {randomString} from '@/utils/util'
 import {getAttrList, createAttr, deleteAttr, updateAttr} from '@/services/metric'
 import {getModelList} from '@/services/task'
+import {getViewSetList} from '@/services/metric'
 
 export default {
   name: 'AttrList',
 	activated() {
-		//每次激活就刷新 
+		//每次激活就刷新 ,这里可以接受从指标集传过来的参数，只显示某一类指标
+		this.pagination.searchKey.viewSetId = this.$route.params.viewSetId
 		this.fetch(this.pagination)
 	},
   data () {
@@ -173,11 +189,13 @@ export default {
 			loading: false,
 			dataSource: [],
 			dataSourceModel: [],
+			dataSourceViewSet: [],
 			attrForm: {
 				id: 0,
 				attrId: '',
 				attrName: '',
 				description: '',
+				viewSetId: '',
 				modelId: '',
 				securityToken: '',
 				checkSecurity: false,
@@ -190,7 +208,8 @@ export default {
 				'ordering': '-id',
 				'searchKey': {
 					'attrId': '',
-					'attrName': ''
+					'attrName': '',
+					'viewSetId': this.$route.params.viewSetId
 				},
 				onChange: page => {
 					const pager = { ...this.pagination };
@@ -213,6 +232,10 @@ export default {
 					dataIndex: 'description'
 				},
 				{
+					title: '所属指标集',
+					dataIndex: 'viewSetName'
+				},
+				{
 					title: '关联model',
 					dataIndex: 'modelName'
 				},
@@ -233,6 +256,7 @@ export default {
   },
   methods: {
 		fetch(params={}) {
+			//获取分页的指标数据
 			this.loading = true;
 			getAttrList(params).then(resp => {
 				let retData = resp.data
@@ -247,6 +271,9 @@ export default {
 							attrId: results[i].attr_id,
 							attrName: results[i].attr_name,
 							description: results[i].description,
+							viewSetId: results[i].view_set_id,
+							viewSetName: results[i].view_set_name,
+							modelId: results[i].model_id,
 							modelName: results[i].model_name,
 							securityToken: results[i].security_token,
 							checkSecurity: results[i].check_security,
@@ -264,6 +291,7 @@ export default {
 					this.$message.error(createRes.message, 3)
 				}
 			}).then(() => {
+				//获取所有的模型文件
 				this.loading = true;
 				getModelList().then(resp => {
 					let retData = resp.data
@@ -275,6 +303,27 @@ export default {
 								key: i,
 								id: results[i].id,
 								modelName: results[i].model_name,
+							})
+						}
+						this.loading = false
+					} else {
+						this.loading = false
+						this.$message.error(createRes.message, 3)
+					}
+				})
+			}).then(() => {
+				//获取所有的指标集
+				this.loading = true;
+				getViewSetList().then(resp => {
+					let retData = resp.data
+					if (retData.code == 0) {
+						this.dataSourceViewSet = []
+						const results = retData.data.results
+						for (let i = 0; i < results.length; i++) {
+							this.dataSourceViewSet.push({
+								key: i,
+								id: results[i].id,
+								viewSetName: results[i].view_set_name,
 							})
 						}
 						this.loading = false
@@ -297,6 +346,7 @@ export default {
 			pager.currentPage = 1;
 			pager.searchKey.attrId = ''
 			pager.searchKey.attrName = ''
+			pager.searchKey.viewSetId = ''
 			this.pagination = pager;
 			this.fetch(this.pagination)
 		},
@@ -306,7 +356,9 @@ export default {
 			this.attrForm.attrId = params.attrId
 			this.attrForm.attrName = params.attrName
 			this.attrForm.description = params.description
-			this.attrForm.modelName = params.modelName
+			this.attrForm.viewSetId = params.viewSetId
+			//这里塞入selection下拉框中，value使用modelId，而label使用modelName
+			this.attrForm.modelId = params.modelId
 			this.attrForm.securityToken = params.securityToken
 			this.attrForm.checkSecurity = params.checkSecurity
 			this.attrForm.url = params.url
@@ -325,7 +377,8 @@ export default {
 					this.$message.success('新建成功！', 3)
 				} else {
 					this.loading = false
-					this.$message.error('新建失败！' + retData.message, 3)
+					console.log(retData)
+					this.$message.error('新建失败！' + retData.data, 3)
 				}
 			})
 		},
@@ -335,7 +388,9 @@ export default {
 			this.attrForm.attrId = params.attrId
 			this.attrForm.attrName = params.attrName
 			this.attrForm.description = params.description
-			this.attrForm.modelName = params.modelName
+			this.attrForm.viewSetId = params.viewSetId
+			//这里塞入selection下拉框中，value使用modelId
+			this.attrForm.modelId = params.modelId
 			this.attrForm.securityToken = params.securityToken
 			this.attrForm.checkSecurity = params.checkSecurity
 			this.attrForm.url = params.url
@@ -350,7 +405,7 @@ export default {
 					this.$message.success('更新成功！', 3)
 				} else {
 					this.loading = false
-					this.$message.error('更新失败！' + retData.message, 3)
+					this.$message.error('更新失败！' + retData.data, 3)
 				}
 			})
 		},
@@ -364,7 +419,7 @@ export default {
 					this.$message.success(record.id + '删除成功！', 3)
 				} else {
 					this.loading = false
-					this.$message.error('删除失败！' + retData.message, 3)
+					this.$message.error('删除失败！' + retData.data, 3)
 				}
 			})
     },

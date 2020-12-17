@@ -37,7 +37,8 @@ class AttrListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attr
         # fields = '__all__'
-        fields = ['id', 'attr_id', 'attr_name', 'description', 'model_id', 'model_name',
+        fields = ['id', 'attr_id', 'attr_name', 'description',
+                  'view_set_id', 'view_set_name', 'model_id', 'model_name',
                   'security_token', 'check_security', 'url',
                   'update_date', 'create_user', 'username']
         extra_kwargs = {
@@ -47,17 +48,21 @@ class AttrListSerializer(serializers.ModelSerializer):
             'attr_count': {
                 'read_only': True,
             },
+            'view_set_name': {
+                'read_only': True,
+            },
             'model_name': {
                 'read_only': True,
             }
         }
 
 
+# 依据不同的功能，建立不同的序列化类。新建指标和更新指标时，字段不同，就可以分列出来
 class AttrCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attr
         # fields = '__all__'
-        fields = ['attr_id', 'attr_name', 'description', 'model',
+        fields = ['attr_id', 'attr_name', 'description', 'view_set', 'model',
                   'security_token', 'check_security', 'url',
                   'create_user']
 
@@ -66,5 +71,5 @@ class AttrUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attr
         # fields = '__all__'
-        fields = ['attr_id', 'attr_name', 'description', 'model_id',
+        fields = ['attr_id', 'attr_name', 'description', 'view_set_id', 'model_id',
                   'security_token', 'check_security', 'url']

@@ -16,7 +16,8 @@ class ViewSetFilter(FilterSet):
 class AttrFilter(FilterSet):
     attr_id = filters.CharFilter(field_name='attr_id', lookup_expr='icontains')
     attr_name = filters.CharFilter(field_name='attr_name', lookup_expr='icontains')
+    view_set_id = filters.CharFilter(field_name='view_set', lookup_expr='exact')
 
     class Meta:
         model = Attr
-        fields = ['attr_id', 'attr_name']
+        fields = ['attr_id', 'attr_name', 'view_set_id']

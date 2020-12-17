@@ -127,6 +127,8 @@ export default {
 				viewSetName: '',
 				description: '' 
 			},
+			// 分页里可以加上排序，过滤搜索关键字，这就是前后端分享，双向绑定的好处
+			// 后端使用django rest framework结合django_filters插件，一条龙完成
 			pagination: {
 				'total': 0,
 				'pageSize': 10,
@@ -136,6 +138,7 @@ export default {
 					'viewSetId': '',
 					'viewSetName': ''
 				},
+				//这种onChange切换分页，才是官网推荐方式
 				onChange: page => {
 					const pager = { ...this.pagination };
 					pager.currentPage = page;
@@ -216,9 +219,13 @@ export default {
 			const pager = { ...this.pagination };
 			pager.currentPage = 1;
 			pager.searchKey.viewSetId = ''
-			pager.searchKey.viewSetName = []
+			pager.searchKey.viewSetName = ''
 			this.pagination = pager;
 			this.fetch(this.pagination)
+		},
+		showRecord(record) {
+			//这里增加一个快捷链接，显示指定指标集内的所有指标
+			this.$router.push({ name: '指标', params: { viewSetId: record.id }});
 		},
 		createRecord() {
 			this.modalTitle = '新建指标集'

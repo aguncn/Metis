@@ -79,6 +79,7 @@ export async function createAttr(data) {
 	const attrId = data['attrId']
 	const attrName = data['attrName']
 	const description = data['description']
+	const viewSetId = data['viewSetId']
 	const modelId = data['modelId']
 	const securityToken = data['securityToken']
 	const checkSecurity = data['checkSecurity']
@@ -87,6 +88,7 @@ export async function createAttr(data) {
     attrId,
     attrName,
     description,
+		viewSetId,
 		modelId,
 		securityToken,
 		checkSecurity,
@@ -103,12 +105,14 @@ export async function getAttrList(data) {
 	const ordering = data['ordering']
 	const attrId = data['searchKey']['attrId']
 	const attrName = data['searchKey']['attrName']
+	const viewSetId = data['searchKey']['viewSetId']
   return request(ATTR_LIST, METHOD.GET, {
 		pageSize,
 		currentPage,
 		ordering, 
 		'attr_id': attrId,
-		'attr_name': attrName
+		'attr_name': attrName,
+		'view_set_id': viewSetId
 	})
 }
 
@@ -130,6 +134,7 @@ export async function updateAttr(data) {
 	const attrId = data['attrId']
 	const attrName = data['attrName']
 	const description = data['description']
+	const viewSetId = data['viewSetId']
 	const modelId = data['modelId']
 	const securityToken = data['securityToken']
 	const checkSecurity = data['checkSecurity']
@@ -141,6 +146,7 @@ export async function updateAttr(data) {
 			attrId,
 			attrName,
 			description,
+			viewSetId,
 			modelId,
 			securityToken,
 			checkSecurity,
