@@ -1,11 +1,11 @@
 from rest_framework import serializers
-from MetisModels.models import TrainTask
+from MetisModels.task_models import Task
 
 
-class TrainTaskSerializer(serializers.ModelSerializer):
+class TaskSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = TrainTask
+        model = Task
         
         fields = ['id', 'task_id',
                   'sample_num', 'positive_sample_num', 'negative_sample_num',
@@ -23,4 +23,8 @@ class TrainTaskSerializer(serializers.ModelSerializer):
         }
 
 
+class ModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
 
+        fields = ['id', 'model_name']

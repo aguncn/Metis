@@ -11,13 +11,11 @@
         <i-menu class="head-menu" :theme="headerTheme" mode="horizontal" :options="menuData" @select="onSelect"/>
       </div>
       <div :class="['admin-header-right', headerTheme]">
-          <header-search class="header-item" @active="val => searchActive = val" />
           <a-tooltip class="header-item" title="帮助文档" placement="bottom" >
             <a href="https://iczer.gitee.io/vue-antd-admin-docs/" target="_blank">
-              <a-icon type="question-circle-o" />
+              Help
             </a>
           </a-tooltip>
-          <header-notice class="header-item"/>
           <header-avatar class="header-item"/>
       </div>
     </div>

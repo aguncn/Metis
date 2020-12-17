@@ -97,8 +97,8 @@
 			    		<a-tag color='blue' v-if="text==='test'">测试集</a-tag>
 			    </template>
 					<template slot="positiveNegative" slot-scope="text">
-							<a-icon type="plus-circle" theme="outlined" :style="{ fontSize: '22px', color: '#ccc' }" v-if="text==='positive'" /> 
-							<a-icon type="minus-circle" theme="outlined" :style="{ fontSize: '22px', color: '#ccc' }" v-if="text==='negative'"/>
+							<a-icon type="plus-circle" theme="outlined" :style="{ fontSize: '20px', color: '#0f0' }" v-if="text==='positive'" /> 
+							<a-icon type="minus-circle" theme="outlined" :style="{ fontSize: '20px', color: '#f00' }" v-if="text==='negative'"/>
 					</template>
 			    <div slot='source' slot-scope="record">
 			    	<a-tag >{{record}}</a-tag>

@@ -26,14 +26,32 @@ const options = {
       component: TabsView,
       redirect: '/login',
       children: [
-        {
-          path: 'anomaly',
-          name: '异常时序',
-          meta: {
-            icon: 'file-ppt',
-          },
-          component: () => import('@/pages/anomaly/list')
-        },
+				{
+				  path: 'anomaly',
+				  name: '异常时序',
+				  meta: {
+				    icon: 'dashboard',
+				  },
+				  component: PageView,
+				  children: [
+				    {
+				      path: 'all_list',
+				      name: '所有异常',
+							meta: {
+								label: 'all'
+							},
+				      component: () => import('@/pages/anomaly/list'),
+				    },
+						{
+						  path: 'label_list',
+						  name: '打标异常',
+							meta: {
+								label: 'yes'
+							},
+						  component: () => import('@/pages/anomaly/list'),
+						}
+				  ]
+				},
 				{
 				  path: 'sample',
 				  name: '样本库',
@@ -66,18 +84,23 @@ const options = {
           ]
         },
         {
-          path: 'parent2',
-          name: '用户管理',
+          path: 'metric',
+          name: '指标管理',
           meta: {
             icon: 'form'
           },
           component: PageView,
           children: [
             {
-              path: 'demo2',
-              name: '演示页面2',
-              component: () => import('@/pages/demo'),
-            }
+              path: 'viewset',
+              name: '指标集',
+              component: () => import('@/pages/metric/viewset/list'),
+            },
+						{
+						  path: 'attr',
+						  name: '指标',
+						  component: () => import('@/pages/metric/attr/list'),
+						}
           ]
         },
         {

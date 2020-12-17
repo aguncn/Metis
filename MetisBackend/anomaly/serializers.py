@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from MetisModels.models import Anomaly
+from MetisModels.anomaly_models import Anomaly
 
 
 class AnomalySerializer(serializers.ModelSerializer):

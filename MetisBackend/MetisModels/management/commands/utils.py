@@ -6,9 +6,9 @@ def get_anomaly():
     data_b = []
     data_c = []
     # win10
-    anomaly_path = 'D:\\Code\\MetisBackend\\MetisModels\\management\\commands\\anomaly.sql'
+    anomaly_path = 'D:\\Code\\Metis\\MetisBackend\\MetisModels\\management\\commands\\anomaly.sql'
     # mac
-    # anomaly_path = '/Users/xxx/Git/MetisBackend/MetisModels/management/commands/anomaly.sql'
+    # anomaly_path = '/Users/xxx/Git/Metis/MetisBackend/MetisModels/management/commands/anomaly.sql'
     with open(anomaly_path, 'r') as f_r:
         for line in f_r.readlines():
             if line.startswith('INSERT INTO'):
@@ -24,8 +24,8 @@ def get_sample_set():
     data_a = []
     data_b = []
     data_c = []
-    sample_set_path = 'D:\\Code\\MetisBackend\\MetisModels\\management\\commands\\sample_set.sql'
-    # sample_set_path = '/Users/xxx/Git/MetisBackend/MetisModels/management/commands/sample_set.sql'
+    sample_set_path = 'D:\\Code\\Metis\\MetisBackend\\MetisModels\\management\\commands\\sample_set.sql'
+    # sample_set_path = '/Users/xxx/Git/Metis/MetisBackend/MetisModels/management/commands/sample_set.sql'
     with open(sample_set_path, 'r') as f_r:
         for line in f_r.readlines():
             if line.startswith('INSERT INTO'):

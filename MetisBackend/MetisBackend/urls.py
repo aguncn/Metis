@@ -16,6 +16,22 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from custom_jwt import views as jwt_views
+from rest_framework import routers, permissions
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+
+schema_view = get_schema_view(
+   openapi.Info(
+      title="测试工程API",
+      default_version='v1.0',
+      description="测试工程接口文档",
+      terms_of_service="https://www.google.com/policies/terms/",
+      contact=openapi.Contact(email="contact@snippets.local"),
+      license=openapi.License(name="BSD License"),
+   ),
+   public=True,
+   permission_classes=(permissions.AllowAny,),
+)
 
 urlpatterns = [
     path('', include('user.urls')),
@@ -24,10 +40,13 @@ urlpatterns = [
     path('jwt_auth/', jwt_views.obtain_jwt_token),
     path('refresh_jwt_auth/', jwt_views.refresh_jwt_token),
     path('verify_jwt_auth/', jwt_views.verity_jwt_token),
+    path('swagger', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]
 
 urlpatterns += [
     path('task/', include('task.urls')),
     path('sample/', include('sample.urls')),
     path('anomaly/', include('anomaly.urls')),
+    path('metric/', include('metric.urls')),
 ]

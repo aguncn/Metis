@@ -1,7 +1,8 @@
 import time
 from django.utils import timezone
-from MetisModels.models import TrainTask
-from .serializers import TrainTaskSerializer
+from MetisModels.task_models import Task
+from .serializers import TaskSerializer
+from .serializers import ModelSerializer
 from rest_framework.generics import CreateAPIView
 from rest_framework.generics import ListAPIView
 from rest_framework.generics import DestroyAPIView
@@ -9,12 +10,13 @@ from rest_framework.filters import OrderingFilter, SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from config.error_code import *
 from utils.utils import build_ret_data, render_json
-from utils.pagination import PNPagination, TaskFilter
+from utils.pagination import PNPagination
+from .filters import TaskFilter
 
 
 class TaskListView(ListAPIView):
-    queryset = TrainTask.objects.all()
-    serializer_class = TrainTaskSerializer
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
     pagination_class = PNPagination
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     # filterset_fields = ['task_id', 'model_name']
@@ -50,6 +52,8 @@ class TaskListView(ListAPIView):
 
 
 class TaskCreateView(CreateAPIView):
+    serializer_class = TaskSerializer
+
     def post(self, request):
         req_data = request.data
         data = dict()
@@ -68,18 +72,18 @@ class TaskCreateView(CreateAPIView):
         end_date = timezone.datetime.strptime(req_data['endTime'], '%Y-%m-%d')
         data['end_date'] = end_date
         data['task_status'] = 'running'
-        serializer = TrainTaskSerializer(data=data)
+        serializer = TaskSerializer(data=data)
         if serializer.is_valid() is False:
             return_dict = build_ret_data(THROW_EXP, str(serializer.errors))
             return render_json(return_dict)
         data = serializer.validated_data
-        TrainTask.objects.create(**data)
+        Task.objects.create(**data)
         return_dict = build_ret_data(OP_SUCCESS, serializer.data)
         return render_json(return_dict)
 
 
 class TaskDestroyView(DestroyAPIView):
-    queryset = TrainTask.objects.all()
+    queryset = Task.objects.all()
     """
     # 自定义get_object()方法，可以删除其它的其它数据，按return的项来删除
     def get_object(self, *args, **kwargs):
@@ -100,3 +104,14 @@ class TaskDestroyView(DestroyAPIView):
             print(e)
             return_dict = build_ret_data(THROW_EXP, str(e))
             return render_json(return_dict)
+
+
+class ModelListView(ListAPIView):
+    queryset = Task.objects.all()
+    serializer_class = ModelSerializer
+    pagination_class = PNPagination
+
+    def get(self, request, *args, **kwargs):
+        res = super().get(self, request, *args, **kwargs)
+        return_dict = build_ret_data(OP_SUCCESS, res.data)
+        return render_json(return_dict)

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from MetisModels.models import SampleSet
+from MetisModels.sample_set_models import SampleSet
 
 
 class SampleSetSerializer(serializers.ModelSerializer):

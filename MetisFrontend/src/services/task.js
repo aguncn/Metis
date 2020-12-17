@@ -1,5 +1,7 @@
 import {TASK_CREATE, TASK_LIST, TASK_DELETE} from '@/services/api'
+import {MODEL_LIST} from '@/services/api'
 import {request, METHOD, removeAuthorization} from '@/utils/request'
+import {isEmpty} from '@/utils/util'
 
 /**
  * 新建训练任务
@@ -56,9 +58,27 @@ export async function getTaskList(data) {
 	})
 }
 
+/**
+ * 获取所有模型
+ */
+export async function getModelList(data) {
+	let pageSize, currentPage
+	if (isEmpty(data)) {
+		pageSize = 1000
+		currentPage = 1
+	} else {
+		pageSize = data['pageSize']
+		currentPage = data['currentPage']
+	}
+  return request(TASK_LIST, METHOD.GET, {
+		pageSize,
+		currentPage
+	})
+}
 
 export default {
   createTask,
 	getTaskList,
+	getModelList,
 	deleteTask
 }

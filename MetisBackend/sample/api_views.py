@@ -1,4 +1,4 @@
-from MetisModels.models import SampleSet
+from MetisModels.sample_set_models import SampleSet
 from rest_framework.views import APIView
 from django.utils import timezone
 from .serializers import SampleSetSerializer
@@ -10,7 +10,8 @@ from rest_framework.filters import OrderingFilter, SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from config.error_code import *
 from utils.utils import build_ret_data, render_json
-from utils.pagination import PNPagination, SampleFilter
+from utils.pagination import PNPagination
+from .filters import SampleFilter
 
 
 class SampleSetCountView(APIView):
@@ -71,11 +72,11 @@ class SampleUpdateView(UpdateAPIView):
         positive_or_negative = req_data['positiveNegative']
         # 这样更新，可以把那些update_date字段自动更新，而使用filter().update()则是不会
         try:
-            _t = SampleSet.objects.get(id=sid)
-            _t.source = source
-            _t.train_or_test = train_or_test
-            _t.positive_or_negative = positive_or_negative
-            _t.save()
+            _s = SampleSet.objects.get(id=sid)
+            _s.source = source
+            _s.train_or_test = train_or_test
+            _s.positive_or_negative = positive_or_negative
+            _s.save()
             return_dict = build_ret_data(OP_SUCCESS, str(req_data))
             return render_json(return_dict)
         except Exception as e:

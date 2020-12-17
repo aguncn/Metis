@@ -17,6 +17,14 @@ class ViewSet(models.Model):
     def __str__(self):
         return self.view_name
 
+    @property
+    def username(self):
+        return self.create_user.username
+
+    @property
+    def attr_count(self):
+        return self.ra_attr.count()
+
     class Meta:
         db_table = 'ViewSet'
         ordering = ('-update_date', )
@@ -36,6 +44,14 @@ class Attr(models.Model):
     update_date = models.DateTimeField(auto_now=True, verbose_name='更新时间')
     status = models.BooleanField(default=True, verbose_name='状态')
 
+    @property
+    def username(self):
+        return self.create_user.username
+
+    @property
+    def view_set_name(self):
+        return self.attr.view_set.view_name
+
     def __str__(self):
         return self.attr_name
 
@@ -54,7 +70,10 @@ class Anomaly(models.Model):
     data_a = models.TextField(verbose_name='当天180分钟数据')
     data_b = models.TextField(verbose_name='一天前180分钟数据')
     data_c = models.TextField(verbose_name='一周前180分钟数据')
-    mark_flag = models.BooleanField(default=False, verbose_name='是否标注')
+    mark_flag = models.CharField(max_length=16,
+                                 null=True,
+                                 blank=True,
+                                 verbose_name='标注正负样本')
     create_user = models.ForeignKey(User,
                                     related_name='ra_anomaly',
                                     on_delete=models.CASCADE,

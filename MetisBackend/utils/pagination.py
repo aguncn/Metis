@@ -1,10 +1,6 @@
+from django.db.models import Q
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.pagination import PageNumberPagination
-from django_filters.rest_framework import FilterSet
-from django_filters import filters
-from MetisModels.models import TrainTask
-from MetisModels.models import SampleSet
-from MetisModels.models import Anomaly
 
 
 class PNPagination(PageNumberPagination):
@@ -33,31 +29,3 @@ class LOPagination(LimitOffsetPagination):
     offset_query_param：表示从数据库中的第几条数据开始显示参数
     max_limit：表示每页最大显示数量，做限制使用，避免突然大量的查询数据，数据库崩溃
     '''
-
-
-class TaskFilter(FilterSet):
-    task_id = filters.CharFilter(field_name='task_id', lookup_expr='icontains')
-    model_name = filters.CharFilter(field_name='model_name', lookup_expr='icontains')
-    source = filters.AllValuesMultipleFilter(field_name='source', lookup_expr='icontains')
-
-    class Meta:
-        model = TrainTask
-        fields = ['task_id', 'model_name', 'source']
-
-
-class SampleFilter(FilterSet):
-    train_or_test = filters.CharFilter(field_name='train_or_test', lookup_expr='icontains')
-    source = filters.CharFilter(field_name='source', lookup_expr='icontains')
-
-    class Meta:
-        model = SampleSet
-        fields = ['train_or_test',  'source']
-
-
-class AnomalyFilter(FilterSet):
-    attr = filters.CharFilter(field_name='attr', lookup_expr='icontains')
-    anomaly_time = filters.CharFilter(field_name='anomaly_time', lookup_expr='icontains')
-
-    class Meta:
-        model = Anomaly
-        fields = ['attr',  'anomaly_time']
