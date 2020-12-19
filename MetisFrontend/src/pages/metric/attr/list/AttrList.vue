@@ -127,10 +127,16 @@
 					:wrapperCol="{span: 17}"
 					:required="true"
 				>
-					<a-input placeholder="请输入" v-model="attrForm.securityToken" :disabled="modalTitle == '查看指标'"/>
-					<a-button type="primary" v-if="modalTitle !== '查看指标'" @click="generateToken">
-						生成随机token
-					</a-button>
+					<a-row>
+						<a-col :span="16">
+							<a-input placeholder="请输入" v-model="attrForm.securityToken" :disabled="modalTitle == '查看指标'"/>
+						</a-col>
+						<a-col :span="8" style="padding-left: 4px">
+							<a-button type="primary" v-if="modalTitle !== '查看指标'" @click="generateToken">
+								生成随机token
+							</a-button>
+						</a-col>
+					</a-row>
 				</a-form-item>
 				<a-form-item
 					label="启用保护token"

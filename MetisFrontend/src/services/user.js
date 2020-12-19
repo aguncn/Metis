@@ -1,5 +1,19 @@
-import {LOGIN, ROUTES} from '@/services/api'
+import {REGISTER, LOGIN, ROUTES} from '@/services/api'
 import {request, METHOD, removeAuthorization} from '@/utils/request'
+
+/**
+ * 注册服务
+ * @param name 账户名
+ * @param password 账户密码
+ * @returns {Promise<AxiosResponse<T>>}
+ */
+export async function register({username, password, passwordConfirm}) {
+  return request(REGISTER, METHOD.POST, {
+    username,
+    password,
+		passwordConfirm
+  })
+}
 
 /**
  * 登录服务

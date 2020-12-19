@@ -136,7 +136,7 @@ REST_FRAMEWORK = {
 
 # 自定义obtain_jwt_token登录参数验证
 AUTHENTICATION_BACKENDS = (
-    'custom_jwt.views.CustomJwtBackend',
+    'account.jwt_views.CustomJwtBackend',
 )
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=365),

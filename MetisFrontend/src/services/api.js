@@ -4,6 +4,7 @@
 const BASE_URL = process.env.VUE_APP_API_BASE_URL
 const REAL_URL = process.env.VUE_APP_API_REAL_URL
 module.exports = {
+	REGISTER: `${REAL_URL}/account/register/`,
   LOGIN: `${REAL_URL}/jwt_auth/`,
 	TASK_CREATE: `${REAL_URL}/task/create/`,
 	TASK_LIST: `${REAL_URL}/task/list/`,
