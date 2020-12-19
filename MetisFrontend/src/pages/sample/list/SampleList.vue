@@ -1,5 +1,8 @@
 <template>
   <a-card>
+		<div>
+		  
+		</div>
     <div :class="advanced ? 'search' : null">
       <a-form-model layout="horizontal" ref="searchKey" :model="pagination.searchKey" @submit="handleSubmit">
         <div :class="advanced ? null: 'fold'">
@@ -35,7 +38,7 @@
             </a-form-model-item>
           </a-col>
         </a-row>
-          <a-row v-if="advanced">
+        <a-row v-if="advanced">
           <a-col :md="8" :sm="24" >
             <a-form-model-item
               label="训练日期"
@@ -64,6 +67,14 @@
             <a-icon :type="advanced ? 'up' : 'down'" />
           </a>
         </span>
+				<a-button-group>
+					<a @click="showSample(record)">
+						<a-button type="primary">导入样本</a-button>
+					</a>
+					<a @click="editSample(record)">
+						<a-button >导出样本</a-button>
+					</a>
+				</a-button-group>
       </a-form-model>
     </div>
     <div>

@@ -35,7 +35,6 @@
             </a-form-item>
 						<div>
 						  <a-checkbox :checked="true" >自动登录</a-checkbox>
-						  <a style="float: right">忘记密码</a>
 						</div>
 						<a-form-item>
 						  <a-button :loading="logging" style="width: 100%;margin-top: 24px" size="large" htmlType="submit" type="primary">用户登录</a-button>
@@ -49,7 +48,7 @@
 					    <a-input
 					      autocomplete="autocomplete"
 					      size="large"
-					      placeholder="username"
+					      placeholder="用户名"
 					      v-decorator="['username', {rules: [{ required: true, message: '请输入账户名', whitespace: true}]}]"
 					    >
 					      <a-icon slot="prefix" type="user" />
@@ -58,7 +57,7 @@
 					  <a-form-item>
 					    <a-input
 					      size="large"
-					      placeholder="password"
+					      placeholder="密码"
 					      autocomplete="autocomplete"
 					      type="password"
 					      v-decorator="['password', {rules: [{ required: true, message: '请输入密码', whitespace: true}]}]"
@@ -69,7 +68,7 @@
 						<a-form-item>
 						  <a-input
 						    size="large"
-						    placeholder="password"
+						    placeholder="确认密码"
 						    autocomplete="autocomplete"
 						    type="password"
 						    v-decorator="['passwordConfirm', {rules: [{ required: true, message: '请确认密码', whitespace: true}]}]"
@@ -78,18 +77,78 @@
 						  </a-input>
 						</a-form-item>
 						<a-form-item>
+						  <a-input
+						    size="large"
+						    placeholder="邮件用于密码找回"
+						    autocomplete="autocomplete"
+						    type="email"
+						    v-decorator="['email']"
+						  >
+						    <a-icon slot="prefix" type="mail" />
+						  </a-input>
+						</a-form-item>
+						<a-form-item>
 						  <a-button :loading="logging" style="width: 100%;margin-top: 24px" size="large" htmlType="submit" type="danger">用户注册</a-button>
+						</a-form-item>
+					</a-form>
+				</a-tab-pane>
+				<a-tab-pane tab="忘记密码" key="3">
+					<a-form @submit="onForgetPassword" :form="formEmail">
+					  <a-alert type="error" :closable="true" v-show="error" :message="error" showIcon style="margin-bottom: 24px;" />
+					  <a-form-item>
+					    <a-input
+					      autocomplete="autocomplete"
+					      size="large"
+					      placeholder="用于找回密码的邮箱"
+					      v-decorator="['email', {rules: [{ required: true, message: '请输入注册邮箱', whitespace: true}]}]"
+					    >
+					      <a-icon slot="prefix" type="mail" />
+					    </a-input>
+					  </a-form-item>
+						<a-form-item>
+							
+						  <a-button :loading="logging" style="width: 100%;margin-top: 24px" size="large" htmlType="submit" type="danger">密码找回</a-button>
 						</a-form-item>
 					</a-form>
 				</a-tab-pane>
 			</a-tabs>
     </div>
+		<!-- begin my modal-->
+		<a-modal :visible="visibleCode" title="验证码"
+			width='60%'
+			:closable="false"
+			>
+			<a-form @submit="onResetPassword" :form="formResetPassword">
+				<a-form-item
+					label="找回验证码"
+					:labelCol="{span: 7}"
+					:wrapperCol="{span: 17}"
+					:required="true"
+				>
+					<a-input
+					  autocomplete="autocomplete"
+					  size="large"
+					  placeholder="验证码"
+					  v-decorator="['verificationCode', {rules: [{ required: true, message: '请输入邮件中的验证码', whitespace: true}]}]"
+					/>
+				</a-form-item>
+				<a-form-item :wrapperCol="{span: 17, offset: 7}">
+					<a-button type="danger" style="width: 100%;margin-top: 24px" size="large" htmlType="submit">将新密码发送到注册邮箱</a-button>
+				</a-form-item>
+			</a-form>
+			 <template slot="footer">
+					<a-button type="primary" @click="handleModalOk">
+						关闭
+					</a-button>
+				</template>
+		</a-modal>
+		<!-- end my modal-->
   </common-layout>
 </template>
 
 <script>
 import CommonLayout from '@/layouts/CommonLayout'
-import {register, login, getRoutesConfig} from '@/services/user'
+import {register, forgetPassword, resetPassword, login, getRoutesConfig} from '@/services/user'
 import {setAuthorization} from '@/utils/request'
 import {loadRoutes} from '@/utils/routerUtil'
 import {mapMutations} from 'vuex'
@@ -100,10 +159,15 @@ export default {
   data () {
     return {
       logging: false,
+			visibleCode: false,
+			verificationCode: '',
 			activeKey: '1',
       error: '',
+			email: '',
       formLogin: this.$form.createForm(this),
-			formRegister: this.$form.createForm(this)
+			formRegister: this.$form.createForm(this),
+			formEmail: this.$form.createForm(this),
+			formResetPassword: this.$form.createForm(this),
     }
   },
   computed: {
@@ -124,12 +188,13 @@ export default {
 		      const username = this.formRegister.getFieldValue('username')
 		      const password = this.formRegister.getFieldValue('password')
 					const passwordConfirm = this.formRegister.getFieldValue('passwordConfirm')
+					const email = this.formRegister.getFieldValue('email')
 		      if (password !== passwordConfirm) {
 						this.logging = false
 						this.$message.error("两次密码不一致", 3)
 						return
 					}
-					register({username, password, passwordConfirm}).then((res) => {
+					register({username, password, passwordConfirm, email}).then((res) => {
 						const registerRes = res.data
 						if (registerRes.code === 0) {
 							this.logging = false
@@ -145,6 +210,51 @@ export default {
 		    }
 		  })
 		},
+		onForgetPassword (e) {
+		  e.preventDefault()
+		  this.formEmail.validateFields((err) => {
+		    if (!err) {
+		      this.logging = true
+					const email = this.formEmail.getFieldValue('email')
+					this.email = email
+					forgetPassword(email).then((res) => {
+						const forgetPasswordRes = res.data
+						if (forgetPasswordRes.code === 0) {
+							this.logging = false
+							this.$message.success('验证码已发出，请检查邮件', 3)
+							this.visibleCode = true
+		
+						} else {
+							this.logging = false
+							this.$message.error(forgetPasswordRes.data, 3)
+						}
+						
+					})
+		    }
+		  })
+		},
+		onResetPassword (e) {
+      e.preventDefault()
+      this.formResetPassword.validateFields((err) => {
+        if (!err) {
+          this.logging = true
+          const verificationCode = this.formResetPassword.getFieldValue('verificationCode')
+          resetPassword(this.email, verificationCode).then((res) => {
+          	console.log(res)
+          	const formResetPasswordRes = res.data
+          	if (formResetPasswordRes.code === 0) {
+          		this.logging = false
+          		this.$message.success('重置密码成功，请进入邮箱查收新密码邮件', 3)
+          		
+          	} else {
+          		this.logging = false
+          		this.$message.error(formResetPasswordRes.data, 3)
+          	}
+          	
+          })
+        }
+      })
+    },
     onSubmitLogin (e) {
       e.preventDefault()
       this.formLogin.validateFields((err) => {
@@ -178,7 +288,10 @@ export default {
     		this.logging = false
     		this.$message.error(loginRes.data.message, 3)
       }
-    }
+    },
+		handleModalOk(e) {
+			this.visibleCode = false
+		}
   }
 }
 </script>

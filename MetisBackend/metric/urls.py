@@ -2,6 +2,8 @@ from django.urls import path
 from . import api_view_set_views
 from . import api_attr_views
 
+app_name = "metric"
+
 urlpatterns = [
     path('view_set_list/', api_view_set_views.ViewSetListView.as_view(), name='view_set_list'),
     path('view_set_create/', api_view_set_views.ViewSetCreateView.as_view(), name='view_set_create'),

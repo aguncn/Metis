@@ -1,4 +1,4 @@
-import {REGISTER, LOGIN, ROUTES} from '@/services/api'
+import {REGISTER, FORGET_PASSWORD, RESET_PASSWORD, LOGIN, ROUTES} from '@/services/api'
 import {request, METHOD, removeAuthorization} from '@/utils/request'
 
 /**
@@ -7,11 +7,39 @@ import {request, METHOD, removeAuthorization} from '@/utils/request'
  * @param password 账户密码
  * @returns {Promise<AxiosResponse<T>>}
  */
-export async function register({username, password, passwordConfirm}) {
+export async function register({username, password, passwordConfirm, email}) {
   return request(REGISTER, METHOD.POST, {
     username,
     password,
-		passwordConfirm
+		passwordConfirm,
+		email
+  })
+}
+
+/**
+ * 忘记密码
+ * @param name 账户名
+ * @param password 账户密码
+ * @returns {Promise<AxiosResponse<T>>}
+ */
+export async function forgetPassword(email) {
+	console.log(email)
+  return request(FORGET_PASSWORD, METHOD.POST, {
+		email
+  })
+}
+
+/**
+ * 重置密码
+ * @param name 账户名
+ * @param password 账户密码
+ * @returns {Promise<AxiosResponse<T>>}
+ */
+export async function resetPassword(email, verificationCode) {
+	console.log(email, verificationCode)
+  return request(RESET_PASSWORD, METHOD.POST, {
+		email,
+		verificationCode
   })
 }
 

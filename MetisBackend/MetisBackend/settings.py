@@ -144,6 +144,28 @@ JWT_AUTH = {
     'JWT_ALLOW_REFRESH': True,
 }
 
+# 配置session存储
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
+
+# Django的缓存配置
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+EMAIL_USE_SSL = True
+EMAIL_HOST = 'smtp.163.com'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'aguncn@163.com'
+EMAIL_HOST_PASSWORD = 'NSXPTLTQZFRHMLGO'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
 """
 
 LOGGING = {
