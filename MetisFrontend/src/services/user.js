@@ -1,4 +1,5 @@
 import {REGISTER, FORGET_PASSWORD, RESET_PASSWORD, LOGIN, ROUTES} from '@/services/api'
+import {UPDATE_PASSWORD, UPDATE_EMAIL} from '@/services/api'
 import {request, METHOD, removeAuthorization} from '@/utils/request'
 
 /**
@@ -13,6 +14,35 @@ export async function register({username, password, passwordConfirm, email}) {
     password,
 		passwordConfirm,
 		email
+  })
+}
+
+/**
+ * 更新密码
+ * @param name 账户名
+ * @param password 账户密码
+ * @returns {Promise<AxiosResponse<T>>}
+ */
+export async function updatePassword({username, currentPassword, newPassword, newPasswordConfirm}) {
+  return request(UPDATE_PASSWORD, METHOD.POST, {
+		username,
+    currentPassword,
+    newPassword,
+		newPasswordConfirm
+  })
+}
+
+/**
+ * 更新邮箱
+ * @param name 账户名
+ * @param password 账户密码
+ * @returns {Promise<AxiosResponse<T>>}
+ */
+export async function updateEmail({username, newEmail, newEmailConfirm}) {
+  return request(UPDATE_EMAIL, METHOD.POST, {
+		username,
+    newEmail,
+    newEmailConfirm
   })
 }
 

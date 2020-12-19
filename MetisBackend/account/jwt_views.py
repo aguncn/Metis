@@ -37,8 +37,11 @@ def jwt_response_payload_handler(token, user=None, expiration=None):
         'token': token,
         'expireAt': expiration,
         'user_id': user.id,
-        'user': {'name': user.username,
-                 'avatar': 'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png'},
+        'user': {
+            'id': user.id,
+            'name': user.username,
+            'email': user.email,
+            'avatar': ''},
         'is_superuser': user.is_superuser,
         'permissions': [{'id': 'queryForm', 'operation': ['add', 'edit']}],
         'roles': [{'id': 'admin', 'operation': ['add', 'edit', 'delete']}],

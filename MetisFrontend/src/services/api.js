@@ -5,6 +5,8 @@ const BASE_URL = process.env.VUE_APP_API_BASE_URL
 const REAL_URL = process.env.VUE_APP_API_REAL_URL
 module.exports = {
 	REGISTER: `${REAL_URL}/account/register/`,
+	UPDATE_PASSWORD: `${REAL_URL}/account/update_password/`,
+	UPDATE_EMAIL: `${REAL_URL}/account/update_email/`,
 	FORGET_PASSWORD: `${REAL_URL}/account/forget_password/`,
 	RESET_PASSWORD: `${REAL_URL}/account/reset_password/`,
   LOGIN: `${REAL_URL}/jwt_auth/`,

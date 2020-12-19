@@ -1,4 +1,5 @@
 from random import Random
+from django.contrib.auth.hashers import check_password
 from MetisBackend.settings import DEFAULT_FROM_EMAIL
 from django.core.mail import send_mail
 from rest_framework.views import APIView
@@ -52,31 +53,32 @@ class UserRegisterView(APIView):
 
 # 更新密码
 class UpdatePasswordView(APIView):
-    authentication_classes = []
-    permission_classes = []
 
     def post(self, request, *args, **kwargs):
         req_data = request.data
-        email = req_data['email']
-        verification_code = req_data['verificationCode']
-        email_title = "新密码，请妥善保存"
-        new_password = random_str()
-        email_body = "新密码为：{0}".format(new_password)
-        user = User.objects.get(email=email)
-        if not user:
-            return_dict = build_ret_data(THROW_EXP, '此邮件不存在')
+        username = req_data['username']
+        login_username = request.user.username
+        if login_username != username:
+            return_dict = build_ret_data(THROW_EXP, '不能更新其它用户密码！')
             return render_json(return_dict)
-        email_to = [email]
-        redis_verification_code = cache.get(email)
-        print(verification_code, redis_verification_code)
-        if verification_code != redis_verification_code:
-            return_dict = build_ret_data(THROW_EXP, '验证码错误')
+        current_password = req_data['currentPassword']
+        user = User.objects.get(username=username)
+        if not check_password(current_password, user.password):
+            return_dict = build_ret_data(THROW_EXP, '当前密码错误，无法更新密码！')
+            return render_json(return_dict)
+        if login_username != username:
+            return_dict = build_ret_data(THROW_EXP, '两次输入密码不一致！')
+            return render_json(return_dict)
+
+        new_password_confirm = req_data['newPasswordConfirm']
+        new_password = req_data['newPassword']
+        if new_password != new_password_confirm:
+            return_dict = build_ret_data(THROW_EXP, '两次输入密码不一致！')
             return render_json(return_dict)
         try:
             user.set_password(new_password)
             user.save()
-            send_status = send_mail(email_title, email_body, DEFAULT_FROM_EMAIL, email_to, )
-            return_dict = build_ret_data(OP_SUCCESS, str(send_status))
+            return_dict = build_ret_data(OP_SUCCESS, str(user))
             return render_json(return_dict)
         except Exception as e:
             print(e)
@@ -86,31 +88,24 @@ class UpdatePasswordView(APIView):
 
 # 更新邮箱
 class UpdateEmailView(APIView):
-    authentication_classes = []
-    permission_classes = []
 
     def post(self, request, *args, **kwargs):
         req_data = request.data
-        email = req_data['email']
-        verification_code = req_data['verificationCode']
-        email_title = "新密码，请妥善保存"
-        new_password = random_str()
-        email_body = "新密码为：{0}".format(new_password)
-        user = User.objects.get(email=email)
-        if not user:
-            return_dict = build_ret_data(THROW_EXP, '此邮件不存在')
+        username = req_data['username']
+        login_username = request.user.username
+        if login_username != username:
+            return_dict = build_ret_data(THROW_EXP, '不能更新其它用户密码！')
             return render_json(return_dict)
-        email_to = [email]
-        redis_verification_code = cache.get(email)
-        print(verification_code, redis_verification_code)
-        if verification_code != redis_verification_code:
-            return_dict = build_ret_data(THROW_EXP, '验证码错误')
+        user = User.objects.get(username=username)
+        new_email_confirm = req_data['newEmailConfirm']
+        new_email = req_data['newEmail']
+        if new_email != new_email_confirm:
+            return_dict = build_ret_data(THROW_EXP, '两次输入新邮箱地址不一致！')
             return render_json(return_dict)
         try:
-            user.set_password(new_password)
+            user.email = new_email
             user.save()
-            send_status = send_mail(email_title, email_body, DEFAULT_FROM_EMAIL, email_to, )
-            return_dict = build_ret_data(OP_SUCCESS, str(send_status))
+            return_dict = build_ret_data(OP_SUCCESS, str(user))
             return render_json(return_dict)
         except Exception as e:
             print(e)

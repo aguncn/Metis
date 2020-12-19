@@ -36,6 +36,7 @@
 					<a-input
 					  autocomplete="autocomplete"
 					  size="large"
+						type="password"
 					  placeholder="请输入当前密码"
 					  v-decorator="['currentPassword', {rules: [{ required: true, message: '请输入当前密码', whitespace: true}]}]"
 					>
@@ -51,6 +52,7 @@
 					<a-input
 					  autocomplete="autocomplete"
 					  size="large"
+						type="password"
 					  placeholder="输入新密码"
 					  v-decorator="['newPassword', {rules: [{ required: true, message: '请输入新密码', whitespace: true}]}]"
 					>
@@ -66,6 +68,7 @@
 					<a-input
 					  autocomplete="autocomplete"
 					  size="large"
+						type="password"
 					  placeholder="再次输入新密码"
 					  v-decorator="['newPasswordConfirm', {rules: [{ required: true, message: '请再输入新密码', whitespace: true}]}]"
 					>
@@ -95,14 +98,7 @@
 					:wrapperCol="{span: 17}"
 					:required="true"
 				>
-					<a-input
-					  autocomplete="autocomplete"
-					  size="large"
-					  placeholder="请输入当前邮箱"
-					  v-decorator="['currentEmail', {rules: [{ required: true, message: '请输入当前邮箱', whitespace: true}]}]"
-					>
-						<a-icon slot="prefix" type="mail" />
-					</a-input>
+					{{ user.email }}
 				</a-form-item>
 				<a-form-item
 					label="新邮箱"
@@ -153,6 +149,7 @@
 import {mapGetters} from 'vuex'
 import {logout} from '@/services/user'
 import {register, forgetPassword, resetPassword, login, getRoutesConfig} from '@/services/user'
+import {updatePassword, updateEmail} from '@/services/user'
 
 export default {
   name: 'HeaderAvatar',
@@ -178,21 +175,28 @@ export default {
 		},
 		onUpdatePassword (e) {
 		  e.preventDefault()
-		  this.formEmail.validateFields((err) => {
+		  this.formUpdatePassword.validateFields((err) => {
 		    if (!err) {
 		      this.logging = true
-					const email = this.formEmail.getFieldValue('email')
-					this.email = email
-					forgetPassword(email).then((res) => {
-						const forgetPasswordRes = res.data
-						if (forgetPasswordRes.code === 0) {
+					const username = this.user.name
+					const currentPassword = this.formUpdatePassword.getFieldValue('currentPassword')
+					const newPassword = this.formUpdatePassword.getFieldValue('newPassword')
+					const newPasswordConfirm = this.formUpdatePassword.getFieldValue('newPasswordConfirm')
+					if (newPassword !== newPasswordConfirm) {
+						this.logging = false
+						this.$message.error("两次新密码不一致", 3)
+						return
+					}
+					updatePassword({username, currentPassword, newPassword, newPasswordConfirm}).then((res) => {
+						const updatePasswordRes = res.data
+						if (updatePasswordRes.code === 0) {
 							this.logging = false
-							this.$message.success('验证码已发出，请检查邮件', 3)
+							this.$message.success('密码更新成功，请选退出重新登陆', 3)
 							this.visibleCode = true
 		
 						} else {
 							this.logging = false
-							this.$message.error(forgetPasswordRes.data, 3)
+							this.$message.error(updatePasswordRes.data, 3)
 						}
 						
 					})
@@ -207,21 +211,27 @@ export default {
 		},
 		onUpdateEmail (e) {
 		  e.preventDefault()
-		  this.formEmail.validateFields((err) => {
+		  this.formUpdateEmail.validateFields((err) => {
 		    if (!err) {
 		      this.logging = true
-					const email = this.formEmail.getFieldValue('email')
-					this.email = email
-					forgetPassword(email).then((res) => {
-						const forgetPasswordRes = res.data
-						if (forgetPasswordRes.code === 0) {
+					const username = this.user.name
+					const newEmail = this.formUpdateEmail.getFieldValue('newEmail')
+					const newEmailConfirm = this.formUpdateEmail.getFieldValue('newEmailConfirm')
+					if (newEmail !== newEmailConfirm) {
+						this.logging = false
+						this.$message.error("两次新邮件地址不一致", 3)
+						return
+					}
+					updateEmail({username, newEmail, newEmailConfirm}).then((res) => {
+						const updateEmailRes = res.data
+						if (updateEmailRes.code === 0) {
 							this.logging = false
-							this.$message.success('验证码已发出，请检查邮件', 3)
+							this.$message.success('邮件地址更新成功！请记住新的邮箱地址。', 3)
 							this.visibleCode = true
 		
 						} else {
 							this.logging = false
-							this.$message.error(forgetPasswordRes.data, 3)
+							this.$message.error(updateEmailRes.data, 3)
 						}
 						
 					})
