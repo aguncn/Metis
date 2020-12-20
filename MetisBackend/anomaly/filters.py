@@ -6,7 +6,7 @@ from MetisModels.anomaly_models import Anomaly
 
 class AnomalyFilter(FilterSet):
     attr = filters.CharFilter(field_name='attr__attr_name', lookup_expr='icontains',)
-    view_set = filters.CharFilter(field_name='attr__view_set__view_name', lookup_expr='icontains',)
+    view_set = filters.CharFilter(field_name='attr__view_set__view_set_name', lookup_expr='icontains',)
     begin_time = filters.CharFilter(field_name='anomaly_time', lookup_expr='gte',)
     end_time = filters.DateTimeFilter(field_name='anomaly_time', lookup_expr='lte',)
     mark_flag = filters.CharFilter(field_name='mark_flag', method='mark_flag_filter',)

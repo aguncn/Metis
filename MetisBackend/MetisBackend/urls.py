@@ -15,6 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.views.static import serve
+from MetisBackend import settings
 from account import jwt_views as jwt_views
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
@@ -40,6 +42,7 @@ urlpatterns = [
     path('jwt_auth/', jwt_views.obtain_jwt_token),
     path('refresh_jwt_auth/', jwt_views.refresh_jwt_token),
     path('verify_jwt_auth/', jwt_views.verity_jwt_token),
+    path('media/<path>', serve, {'document_root': settings.MEDIA_ROOT}),
     path('swagger(<format>.json|.yaml)', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),

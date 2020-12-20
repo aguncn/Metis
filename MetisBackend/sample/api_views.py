@@ -98,3 +98,31 @@ class SampleDestroyView(DestroyAPIView):
             print(e)
             return_dict = build_ret_data(THROW_EXP, str(e))
             return render_json(return_dict)
+
+
+# 上传样本文件
+class UploadSampleSetView(APIView):
+    def post(self, request):
+        res = {}
+        image = request.data.get('file')
+        if not image:
+            res['code']=10020
+            res['message']='输入不能为空'
+        else:
+            image_name = image.name
+            image_path = os.path.join(settings.UPLOAD_FILE,image_name)
+            f = open(image_path,'wb')
+            for i in image.chunks():
+                f.write(i)
+            f.close()
+            goods = Goods.objects.filter(name=name).first()
+            if goods:
+                res['code']=10023
+                res['message']='商品已存在'
+            else:
+                goods = Goods(name=name,price=price,image='/upload/'+image_name)
+                goods.save()
+                res['code']=200
+                res['message']='添加成功'
+                return JsonResponse(res)
+        return JsonResponse(res)

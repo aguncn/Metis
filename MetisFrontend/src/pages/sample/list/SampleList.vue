@@ -7,6 +7,20 @@
       <a-form-model layout="horizontal" ref="searchKey" :model="pagination.searchKey" @submit="handleSubmit">
         <div :class="advanced ? null: 'fold'">
           <a-row >
+          <a-col :md="3" :sm="6" >
+						<a-button type="primary" icon="import" ghost @click="onModalImport">
+							导入
+						</a-button>
+          </a-col>
+					<a-col :md="3" :sm="6" >
+						<a @click="editSample(record)">
+							<a-button type="primary" icon="export" ghost>
+								导出
+							</a-button>
+						</a>
+					</a-col>
+          <a-col :md="8" :sm="24" >
+          </a-col>
           <a-col :md="8" :sm="24" >
             <a-form-model-item
               label="指标"
@@ -14,27 +28,6 @@
               :wrapperCol="{span: 18, offset: 1}"
             >
               <a-input placeholder="请输入" v-model="pagination.searchKey.taskId" />
-            </a-form-model-item>
-          </a-col>
-          <a-col :md="8" :sm="24" >
-            <a-form-model-item
-              label="来源"
-              :labelCol="{span: 5}"
-              :wrapperCol="{span: 18, offset: 1}"
-            >
-              <a-select placeholder="请选择">
-                <a-select-option value="metis">methis</a-select-option>
-                <a-select-option value="api">api</a-select-option>
-              </a-select>
-            </a-form-model-item>
-          </a-col>
-          <a-col :md="8" :sm="24" >
-            <a-form-model-item
-              label="集合"
-              :labelCol="{span: 5}"
-              :wrapperCol="{span: 18, offset: 1}"
-            >
-              <a-input-number style="width: 100%" placeholder="请输入" />
             </a-form-model-item>
           </a-col>
         </a-row>
@@ -67,14 +60,7 @@
             <a-icon :type="advanced ? 'up' : 'down'" />
           </a>
         </span>
-				<a-button-group>
-					<a @click="showSample(record)">
-						<a-button type="primary">导入样本</a-button>
-					</a>
-					<a @click="editSample(record)">
-						<a-button >导出样本</a-button>
-					</a>
-				</a-button-group>
+				
       </a-form-model>
     </div>
     <div>
@@ -168,6 +154,43 @@
 				</a-form-item>
 			</a-form>
 		</a-modal>
+		
+		<!-- begin my modal-->
+		<a-modal :visible="visibleShowImport" title="导入样本"
+			width='60%'
+			:closable="false"
+			>
+			<a-alert type="info">
+				<span slot="description">
+					<a-row>
+						<a-col :md="6" :sm="6" >
+							<a href="http://127.0.0.1:8000/media/样本导入模板.csv" target="_blank">
+								样本导入模板
+							</a>
+						</a-col>
+						<a-col :md="6" :sm="6" >
+							<a href="http://127.0.0.1:8000/media/样本导入规则.xls" target="_blank">
+								样本导入规则
+							</a>
+						</a-col>
+					</a-row>
+				</span>
+			</a-alert>
+			<a-row class="upload">
+				<a-col :md="12" :sm="24" >
+					<input type="file" id="sampleFile" />
+				</a-col>
+				<a-col :md="12" :sm="24" >
+					<a-button type="danger" @click="uploadFile">导入</a-button>
+				</a-col>
+			</a-row>
+		 <template slot="footer">
+				<a-button type="primary" @click="handleModalImportOk">
+					关闭
+				</a-button>
+			</template>
+		</a-modal>
+		<!-- end my modal-->
   </a-card>
 </template>
 
@@ -186,9 +209,13 @@ export default {
 			dataSingleAbc: {},
 			visibleEditSample: false,
 			visibleShowSample: false,
+			visibleShowImport: false,
 			titleSample: '',
 			titleSamples: [],
       advanced: false,
+			headers: {
+				authorization: 'authorization-text',
+			},
 			taskForm: {
 				id: 0,
 				source: '',
@@ -265,6 +292,25 @@ export default {
     }
   },
   methods: {
+		uploadFile:function () {
+				var data = new FormData();
+				data.append('name',this.name);
+				data.append('price',this.price);
+				var image =document.getElementById('sampleFile').files[0];
+				data.append('file',image);
+				this.axios({
+						url:'/api/sadmin/addcate/',
+						data:data,
+						method:'post'
+				}).then((res)=>{
+						if (res.data.code==200){
+								this.$router.push({'path':'show'})
+						}
+						alert(res.data.message)
+				}).catch((err)=>{
+						console.log(err)
+				})
+		},
 		fetch(params={}) {
 			this.loading = true;
 			getSampleList(params).then(resp => {
@@ -335,7 +381,12 @@ export default {
     toggleAdvanced () {
       this.advanced = !this.advanced
     },
-		
+		onModalImport(e) {
+			this.visibleShowImport = true
+		},
+		handleModalImportOk(e) {
+			this.visibleShowImport = false
+		},
 		showSample(params) {
 			this.titleSample = this.titleSamples[params.key]
 			this.dataSingleAbc = this.dataAbc[params.key]
@@ -378,7 +429,7 @@ export default {
 
 <style lang="less" scoped>
   .search{
-    margin-bottom: 54px;
+    margin-bottom: 10px;
   }
   .fold{
     width: calc(100% - 216px);
@@ -392,4 +443,7 @@ export default {
       width: 100%;
     }
   }
+	.upload{
+	  margin-top: 18px;
+	}
 </style>
