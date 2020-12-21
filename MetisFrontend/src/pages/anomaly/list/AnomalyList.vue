@@ -3,7 +3,7 @@
     <div>
       <a-form-model layout="horizontal" ref="searchKey" :model="pagination.searchKey" @submit="handleSubmit">
         <div class="fold">
-          <a-row >
+          <a-row>
           <a-col :md="8" :sm="24" >
             <a-form-model-item
               label="指标集"

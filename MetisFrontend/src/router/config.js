@@ -58,7 +58,19 @@ const options = {
 				  meta: {
 				    icon: 'file-ppt',
 				  },
-				  component: () => import('@/pages/sample/list')
+					component: PageView,
+					children: [
+					  {
+					    path: 'all_sample',
+					    name: '所有样本',
+					    component: () => import('@/pages/sample/list'),
+					  },
+						{
+						  path: 'import_sample',
+						  name: '导入样本',
+						  component: () => import('@/pages/sample/import'),
+						}
+					]
 				},
         {
           path: 'task',

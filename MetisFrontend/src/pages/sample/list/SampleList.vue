@@ -6,51 +6,37 @@
     <div :class="advanced ? 'search' : null">
       <a-form-model layout="horizontal" ref="searchKey" :model="pagination.searchKey" @submit="handleSubmit">
         <div :class="advanced ? null: 'fold'">
-          <a-row >
-          <a-col :md="3" :sm="6" >
-						<a-button type="primary" icon="import" ghost @click="onModalImport">
-							导入
-						</a-button>
-          </a-col>
-					<a-col :md="3" :sm="6" >
-						<a @click="editSample(record)">
-							<a-button type="primary" icon="export" ghost>
-								导出
-							</a-button>
-						</a>
-					</a-col>
-          <a-col :md="8" :sm="24" >
-          </a-col>
-          <a-col :md="8" :sm="24" >
-            <a-form-model-item
-              label="指标"
-              :labelCol="{span: 5}"
-              :wrapperCol="{span: 18, offset: 1}"
-            >
-              <a-input placeholder="请输入" v-model="pagination.searchKey.taskId" />
-            </a-form-model-item>
-          </a-col>
-        </a-row>
-        <a-row v-if="advanced">
-          <a-col :md="8" :sm="24" >
-            <a-form-model-item
-              label="训练日期"
-              :labelCol="{span: 5}"
-              :wrapperCol="{span: 18, offset: 1}"
-            >
-              <a-date-picker style="width: 100%" placeholder="请输入更新日期" />
-            </a-form-model-item>
-          </a-col>
-          <a-col :md="8" :sm="24" >
-            <a-form-model-item
-              label="任务id"
-              :labelCol="{span: 5}"
-              :wrapperCol="{span: 18, offset: 1}"
-            >
-              <a-input placeholder="请输入" />
-            </a-form-model-item>
-          </a-col>
-        </a-row>
+					<a-row >
+						<a-col :md="8" :sm="24" >
+							<a-form-model-item
+								label="指标"
+								:labelCol="{span: 5}"
+								:wrapperCol="{span: 18, offset: 1}"
+							>
+								<a-input placeholder="请输入" v-model="pagination.searchKey.taskId" />
+							</a-form-model-item>
+						</a-col>
+					</a-row>
+					<a-row v-if="advanced">
+						<a-col :md="8" :sm="24" >
+							<a-form-model-item
+								label="训练日期"
+								:labelCol="{span: 5}"
+								:wrapperCol="{span: 18, offset: 1}"
+							>
+								<a-date-picker style="width: 100%" placeholder="请输入更新日期" />
+							</a-form-model-item>
+						</a-col>
+						<a-col :md="8" :sm="24" >
+							<a-form-model-item
+								label="任务id"
+								:labelCol="{span: 5}"
+								:wrapperCol="{span: 18, offset: 1}"
+							>
+								<a-input placeholder="请输入" />
+							</a-form-model-item>
+						</a-col>
+					</a-row>
         </div>
         <span style="float: right; margin-top: 3px;">
           <a-button type="primary" html-type="submit">查询</a-button>
@@ -60,7 +46,6 @@
             <a-icon :type="advanced ? 'up' : 'down'" />
           </a>
         </span>
-				
       </a-form-model>
     </div>
     <div>
@@ -87,6 +72,9 @@
 								@confirm="deleteRecord(record)">
 								<a-button type="danger" >删除</a-button>
 							</a-popconfirm>
+							<a @click="exportSample(record)">
+								<a-button>导出</a-button>
+							</a>
 						</a-button-group>
 			    </div>
 			    <template slot="trainTest" slot-scope="text">
@@ -154,47 +142,11 @@
 				</a-form-item>
 			</a-form>
 		</a-modal>
-		
-		<!-- begin my modal-->
-		<a-modal :visible="visibleShowImport" title="导入样本"
-			width='60%'
-			:closable="false"
-			>
-			<a-alert type="info">
-				<span slot="description">
-					<a-row>
-						<a-col :md="6" :sm="6" >
-							<a href="http://127.0.0.1:8000/media/样本导入模板.csv" target="_blank">
-								样本导入模板
-							</a>
-						</a-col>
-						<a-col :md="6" :sm="6" >
-							<a href="http://127.0.0.1:8000/media/样本导入规则.xls" target="_blank">
-								样本导入规则
-							</a>
-						</a-col>
-					</a-row>
-				</span>
-			</a-alert>
-			<a-row class="upload">
-				<a-col :md="12" :sm="24" >
-					<input type="file" id="sampleFile" />
-				</a-col>
-				<a-col :md="12" :sm="24" >
-					<a-button type="danger" @click="uploadFile">导入</a-button>
-				</a-col>
-			</a-row>
-		 <template slot="footer">
-				<a-button type="primary" @click="handleModalImportOk">
-					关闭
-				</a-button>
-			</template>
-		</a-modal>
-		<!-- end my modal-->
   </a-card>
 </template>
 
 <script>
+import Papa from 'papaparse'
 import {dataSeries} from '@/utils/dataSeries'
 import {getSampleList, updateSample, deleteSample} from '@/services/sample'
 
@@ -209,7 +161,6 @@ export default {
 			dataSingleAbc: {},
 			visibleEditSample: false,
 			visibleShowSample: false,
-			visibleShowImport: false,
 			titleSample: '',
 			titleSamples: [],
       advanced: false,
@@ -292,25 +243,6 @@ export default {
     }
   },
   methods: {
-		uploadFile:function () {
-				var data = new FormData();
-				data.append('name',this.name);
-				data.append('price',this.price);
-				var image =document.getElementById('sampleFile').files[0];
-				data.append('file',image);
-				this.axios({
-						url:'/api/sadmin/addcate/',
-						data:data,
-						method:'post'
-				}).then((res)=>{
-						if (res.data.code==200){
-								this.$router.push({'path':'show'})
-						}
-						alert(res.data.message)
-				}).catch((err)=>{
-						console.log(err)
-				})
-		},
 		fetch(params={}) {
 			this.loading = true;
 			getSampleList(params).then(resp => {
@@ -332,6 +264,9 @@ export default {
 							source: results[i].source,
 							trainTest: results[i].train_or_test,
 							positiveNegative: results[i].positive_or_negative,
+							dataA: results[i].data_a,
+							dataB: results[i].data_b,
+							dataC: results[i].data_c,
 							createDate: results[i].create_date,
 							createUser: results[i].username
 						})
@@ -381,18 +316,11 @@ export default {
     toggleAdvanced () {
       this.advanced = !this.advanced
     },
-		onModalImport(e) {
-			this.visibleShowImport = true
-		},
-		handleModalImportOk(e) {
-			this.visibleShowImport = false
-		},
 		showSample(params) {
 			this.titleSample = this.titleSamples[params.key]
 			this.dataSingleAbc = this.dataAbc[params.key]
 			this.visibleShowSample = true;
 		},
-		
 		editSample(params) {
 			this.taskForm.id = params.id
 			this.taskForm.trainTest = params.trainTest
@@ -400,12 +328,10 @@ export default {
 			this.taskForm.positiveNegative = params.positiveNegative
 			this.visibleEditSample = true;
 		},
-		
 		handleEditSampleOk(e) {
 			this.fetch(this.pagination)
 			this.visibleEditSample = false;
 		},
-		
 		updateSample() {
 			updateSample(this.taskForm).then(resp => {
 				let retData = resp.data
@@ -419,7 +345,30 @@ export default {
 				}
 			})
 		},
-		
+		exportSample(params) {
+			const itemObj =  this.dataSource[params.key]
+			const itemList = [
+				itemObj
+			]
+			console.log(itemList)
+
+			let csv = Papa.unparse(itemList)
+			// 定义文件内容，类型必须为Blob 否则createObjectURL会报错
+			const content = new Blob([`\ufeff${csv}`], {type: 'text/plain;charset=utf-8'})
+			// 生成url对象
+			const urlObject = window.URL || window.webkitURL || window
+			const url = urlObject.createObjectURL(content)
+			// 生成<a></a>DOM元素
+			const el = document.createElement('a')
+			// 链接赋值
+			el.href = url
+			el.download = `指标${itemObj.attrName}-${itemObj.anomalyTime}导出.csv`
+			// 必须点击否则不会下载
+			el.click()
+			// 移除链接释放资源
+			urlObject.revokeObjectURL(url)
+
+		},
 		handleShowSampleOk(e) {
 			this.visibleShowSample = false;
 		}
@@ -429,7 +378,7 @@ export default {
 
 <style lang="less" scoped>
   .search{
-    margin-bottom: 10px;
+    margin-bottom: 54px;
   }
   .fold{
     width: calc(100% - 216px);
@@ -443,7 +392,4 @@ export default {
       width: 100%;
     }
   }
-	.upload{
-	  margin-top: 18px;
-	}
 </style>
