@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from MetisModels.sample_set_models import SampleSet
+from MetisModels.sample_set_upload_models import SampleSetUpload
 
 
 class SampleSetSerializer(serializers.ModelSerializer):
@@ -33,3 +34,10 @@ class SampleUpdateSetSerializer(serializers.ModelSerializer):
         # fields = '__all__'
         fields = ['source', 'train_or_test', 'positive_or_negative']
 
+
+class SampleUploadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SampleSetUpload
+        # fields = '__all__'
+        fields = ['id', 'sample_set_upload_id', 'sample_count', 'file_name',
+                  'file_path', 'create_user', 'username']

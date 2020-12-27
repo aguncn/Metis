@@ -1,4 +1,5 @@
-import {SAMPLE_COUNT, SAMPLE_LIST, SAMPLE_UPDATE, SAMPLE_DELETE} from '@/services/api'
+import {SAMPLE_LIST, SAMPLE_UPDATE, SAMPLE_DELETE, SAMPLE_COUNT} from '@/services/api'
+import {SAMPLE_UPLOAD_FILE, SAMPLE_UPLOAD_LIST, SAMPLE_UPLOAD_DELETE} from '@/services/api'
 import {request, METHOD, removeAuthorization} from '@/utils/request'
 
 /**
@@ -46,7 +47,7 @@ export async function updateSample(data) {
 }
 
 /**
- * 获取所有样本务
+ * 获取所有样本集
  */
 export async function getSampleList(data) {
 	const pageSize = data['pageSize']
@@ -69,10 +70,49 @@ export async function getSampleList(data) {
 	})
 }
 
+/**
+ * 上传样本集
+ */
+
+export async function uploadSampleFile(formData) {
+	const fileName = formData['name']
+	const SAMPLE_UPLOAD_FILE_PATH = SAMPLE_UPLOAD_FILE + fileName + '/'
+  return request(SAMPLE_UPLOAD_FILE_PATH, METHOD.POST, {
+		formData
+		})
+}
+
+/**
+ * 获取上传样本集任务
+ */
+export async function getSampleUploadList(data) {
+	const pageSize = data['pageSize']
+	const currentPage = data['currentPage']
+	const ordering = data['ordering']
+	const sampleSetUploadId = data['searchKey']['sampleSetUploadId']
+  return request(SAMPLE_UPLOAD_LIST, METHOD.GET, {
+		pageSize,
+		currentPage,
+		ordering, 
+		'sample_set_upload_id': sampleSetUploadId
+	})
+}
+
+/**
+ * 删除上传样本集任务
+ */
+export async function deleteUploadSample(data) {
+	// 传给DjangoRestFramework的delete的URL需要带pk(id)参数，在这里组合一下
+	const SAMPLE_UPLOAD_DELETE_PATH = SAMPLE_UPLOAD_DELETE + data + '/'
+  return request(SAMPLE_UPLOAD_DELETE_PATH, METHOD.DELETE)
+}
+
 export default {
   sampleCount,
 	deleteSample,
 	getSampleList,
-	updateSample
-	
+	updateSample,
+	uploadSampleFile,
+	getSampleUploadList,
+	deleteUploadSample
 }

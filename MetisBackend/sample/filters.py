@@ -1,6 +1,7 @@
 from django_filters.rest_framework import FilterSet
 from django_filters import filters
 from MetisModels.sample_set_models import SampleSet
+from MetisModels.sample_set_upload_models import SampleSetUpload
 
 
 class SampleFilter(FilterSet):
@@ -10,3 +11,11 @@ class SampleFilter(FilterSet):
     class Meta:
         model = SampleSet
         fields = ['train_or_test',  'source']
+
+
+class SampleUploadFilter(FilterSet):
+    file_name = filters.CharFilter(field_name='file_name', lookup_expr='icontains')
+
+    class Meta:
+        model = SampleSetUpload
+        fields = ['file_name']

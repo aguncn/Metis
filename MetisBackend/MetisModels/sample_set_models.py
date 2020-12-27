@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from .attr_models import Attr
 from .anomaly_models import Anomaly
+from .sample_set_upload_models import SampleSetUpload
 
 User = get_user_model()
 
@@ -30,6 +31,12 @@ class SampleSet(models.Model):
     data_a = models.TextField(verbose_name='当天180分钟数据')
     data_b = models.TextField(verbose_name='一天前360分钟数据')
     data_c = models.TextField(verbose_name='一周前360分钟数据')
+    upload = models.ForeignKey(SampleSetUpload,
+                               null=True,
+                               blank=True,
+                               related_name='ra_sample_set',
+                               on_delete=models.DO_NOTHING,
+                               verbose_name='关联上传')
     anomaly = models.ForeignKey(Anomaly,
                                 null=True,
                                 blank=True,

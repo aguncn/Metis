@@ -1,5 +1,12 @@
+import time
+import traceback
+import csv
+from django.contrib.auth import get_user_model
 from MetisModels.sample_set_models import SampleSet
+from MetisModels.attr_models import Attr
+from MetisModels.sample_set_upload_models import SampleSetUpload
 from rest_framework.views import APIView
+from rest_framework.parsers import FileUploadParser, MultiPartParser
 from django.utils import timezone
 from .serializers import SampleSetSerializer
 from .serializers import SampleUpdateSetSerializer
@@ -10,8 +17,11 @@ from rest_framework.filters import OrderingFilter, SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from config.error_code import *
 from utils.utils import build_ret_data, render_json
+from utils.utils import check_value
 from utils.pagination import PNPagination
 from .filters import SampleFilter
+
+User = get_user_model()
 
 
 class SampleSetCountView(APIView):
@@ -92,37 +102,8 @@ class SampleDestroyView(DestroyAPIView):
         try:
             res = super().destroy(self, request, *args, **kwargs)
             return_dict = build_ret_data(OP_SUCCESS, str(res))
-            print(res)
             return render_json(return_dict)
         except Exception as e:
             print(e)
             return_dict = build_ret_data(THROW_EXP, str(e))
             return render_json(return_dict)
-
-
-# 上传样本文件
-class UploadSampleSetView(APIView):
-    def post(self, request):
-        res = {}
-        image = request.data.get('file')
-        if not image:
-            res['code']=10020
-            res['message']='输入不能为空'
-        else:
-            image_name = image.name
-            image_path = os.path.join(settings.UPLOAD_FILE,image_name)
-            f = open(image_path,'wb')
-            for i in image.chunks():
-                f.write(i)
-            f.close()
-            goods = Goods.objects.filter(name=name).first()
-            if goods:
-                res['code']=10023
-                res['message']='商品已存在'
-            else:
-                goods = Goods(name=name,price=price,image='/upload/'+image_name)
-                goods.save()
-                res['code']=200
-                res['message']='添加成功'
-                return JsonResponse(res)
-        return JsonResponse(res)
